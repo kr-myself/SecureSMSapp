@@ -4,7 +4,15 @@ class Hash {
     private String hash;
     private String k[] = {"243F6A88", "85A308D3", "13198A2E", "03707344", "A4093822", "299F31D0", "082EFA98", "EC4E6C89"};
     private String z[] = {"243F6A88", "85A308D3", "13198A2E", "03707344", "A4093822", "299F31D0", "082EFA98", "EC4E6C89"};
-
+	private int ROUND1[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
+    private int ROUND2[] = {5, 14, 26, 18, 11, 28, 7, 16, 0, 23, 20, 22, 1, 10, 4, 8, 30, 3, 21, 9, 17, 24, 29, 6, 19, 12, 15, 13, 2, 25, 31, 27};
+    private int ROUND3[] = {19, 9, 4, 20, 28, 17, 8, 22, 29, 14, 25, 12, 24, 30, 16, 26, 31, 15, 7, 3, 1, 0, 18, 27, 13, 6, 21, 10, 23, 11, 5, 2};
+    
+    private String INITIAL_CONST[] = {"243F6A88", "85A308D3", "13198A2E", "03707344", "A4093822", "299F31D0", "082EFA98", "EC4E6C89"};
+    private String ROUND2_CONST[] = {"452821E6", "38D01377", "BE5466CF", "34E90C6C", "C0AC29B7", "C97C50DD", "3F84D5B5", "B5470917", "9216D5D9", "8979FB1B", "D1310BA6", "98DFB5AC", "2FFD72DB", "D01ADFB7", "B8E1AFED", "6A267E96", "BA7C9045", "F12C7F99", "24A19947", "B3916CF7", "0801F2E2", "858EFC16", "636920D8", "71574E69", "A458FEA3", "F4933D7E", "0D95748F", "728EB658", "718BCD58", "82154AEE", "7B54A41D", "C25A59B5"};
+    private String ROUND3_CONST[] = {"9C30D539", "2AF26013", "C5D1B023", "286085F0", "CA417918", "B8DB38EF", "8E79DCB0", "603A180E", "6C9E0E8B", "B01E8A3E", "D71577C1", "BD314B27", "78AF2FDA", "55605C60", "E65525F3", "AA55AB94", "57489862", "63E81440", "55CA396A", "2AAB10B6", "B4CC5C34", "1141E8CE", "A15486AF", "7C72E993", "B3EE1411", "636FBC2A", "2BA9C55D", "741831F6", "CE5C3E16", "9B87931E", "AFD6BA33", "6C24CF5C"};
+    
+		
     Hash(String input) {
         if (input.length() < 128) {
             StringBuilder inputBuilder = new StringBuilder(input);
@@ -49,7 +57,7 @@ class Hash {
                     xx[y] += 8;
                 }
             }
-            k[xx[0]] = FF(k[xx[0]], k[xx[1]], k[xx[2]], k[xx[3]], k[xx[4]], k[xx[5]], k[xx[6]], k[xx[7]], w[x]);
+            k[xx[0]] = FF(k[xx[0]], k[xx[1]], k[xx[2]], k[xx[3]], k[xx[4]], k[xx[5]], k[xx[6]], k[xx[7]], w[ROUND1[x]]);
         }
 
         //Round 2
@@ -61,7 +69,7 @@ class Hash {
                     xx[y] += 8;
                 }
             }
-            k[xx[0]] = GG(k[xx[0]], k[xx[1]], k[xx[2]], k[xx[3]], k[xx[4]], k[xx[5]], k[xx[6]], k[xx[7]], w[x], "AAAAAAA");
+            k[xx[0]] = GG(k[xx[0]], k[xx[1]], k[xx[2]], k[xx[3]], k[xx[4]], k[xx[5]], k[xx[6]], k[xx[7]], w[ROUND2[x]], ROUND2_CONST[x]);
         }
 
         //Round 3
@@ -73,7 +81,7 @@ class Hash {
                     xx[y] += 8;
                 }
             }
-            k[xx[0]] = HH(k[xx[0]], k[xx[1]], k[xx[2]], k[xx[3]], k[xx[4]], k[xx[5]], k[xx[6]], k[xx[7]], w[x], "AAAAAAA");
+            k[xx[0]] = HH(k[xx[0]], k[xx[1]], k[xx[2]], k[xx[3]], k[xx[4]], k[xx[5]], k[xx[6]], k[xx[7]], w[ROUND3[x]], ROUND3_CONST[x]);
         }
 
         //Finishing Up
