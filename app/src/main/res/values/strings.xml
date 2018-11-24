@@ -1,3 +1,11 @@
 <resources>
-    <string name="app_name">SecureSMSapp</string>
+    <string name="app_name">SecureMessage</string>
+    <string name="image_content">Logo</string>
+    <string name="userid_hint">User ID</string>
+    <string name="password_hint">Password</string>
+    <string name="repassword_hint">Re-enter Password</string>
+    <string name="login">Login</string>
+    <string name="login_link">Already a member? Login</string>
+    <string name="signup">Create Account</string>
+    <string name="signup_link">No account yet? Create one</string>
 </resources>
