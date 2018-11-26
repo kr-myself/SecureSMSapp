@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -14,8 +13,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class Signup extends AppCompatActivity {
-    private static final String TAG = "Signup";
-
     @BindView(R.id.input_userid) EditText _useridText;
     @BindView(R.id.input_password) EditText _passwordText;
     @BindView(R.id.input_reEnterPassword) EditText _reEnterPasswordText;
@@ -40,8 +37,6 @@ public class Signup extends AppCompatActivity {
     }
 
     public void signup() {
-        Log.d(TAG, "Signup");
-
         if (!validate()) {
             onSignupFailed();
             return;
@@ -62,14 +57,12 @@ public class Signup extends AppCompatActivity {
         // TODO: Implement your own signup logic here.
 
         new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        // On complete call either onSignupSuccess or onSignupFailed
-                        // depending on success
-                        onSignupSuccess();
-                        // onSignupFailed();
-                        progressDialog.dismiss();
-                    }
+                () -> {
+                    // On complete call either onSignupSuccess or onSignupFailed
+                    // depending on success
+                    onSignupSuccess();
+                    // onSignupFailed();
+                    progressDialog.dismiss();
                 }, 3000);
     }
 
@@ -81,7 +74,7 @@ public class Signup extends AppCompatActivity {
     }
 
     public void onSignupFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), "Sign up failed", Toast.LENGTH_LONG).show();
 
         _signupButton.setEnabled(true);
     }
@@ -93,22 +86,22 @@ public class Signup extends AppCompatActivity {
         String password = _passwordText.getText().toString();
         String reEnterPassword = _reEnterPasswordText.getText().toString();
 
-        if (userid.isEmpty() || userid.length() < 3) {
-            _useridText.setError("at least 3 characters");
+        if (userid.isEmpty() || userid.length() < 4 || userid.length() > 10) {
+            _useridText.setError("Must be 4-10 characters");
             valid = false;
         } else {
             _useridText.setError(null);
         }
 
-        if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            _passwordText.setError("between 4 and 10 alphanumeric characters");
+        if (password.isEmpty() || password.length() < 8) {
+            _passwordText.setError("Password must have more than 8 characters");
             valid = false;
         } else {
             _passwordText.setError(null);
         }
 
-        if (reEnterPassword.isEmpty() || reEnterPassword.length() < 4 || reEnterPassword.length() > 10 || !(reEnterPassword.equals(password))) {
-            _reEnterPasswordText.setError("Password Do not match");
+        if (reEnterPassword.isEmpty() || reEnterPassword.length() < 8 || !(reEnterPassword.equals(password))) {
+            _reEnterPasswordText.setError("Passwords do not match");
             valid = false;
         } else {
             _reEnterPasswordText.setError(null);
