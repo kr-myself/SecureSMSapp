@@ -51,7 +51,7 @@ public class Login extends AppCompatActivity {
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
 
-        String email = _useridText.getText().toString();
+        String userid = _useridText.getText().toString();
         String password = _passwordText.getText().toString();
 
         // TODO: Implement your own authentication logic here.
@@ -59,7 +59,7 @@ public class Login extends AppCompatActivity {
         new android.os.Handler().postDelayed(
                 () -> {
                     // On complete call either onLoginSuccess or onLoginFailed
-                    onLoginSuccess();
+                    onLoginSuccess(userid);
                     // onLoginFailed();
                     progressDialog.dismiss();
                 }, 3000);
@@ -84,8 +84,11 @@ public class Login extends AppCompatActivity {
         moveTaskToBack(true);
     }
 
-    public void onLoginSuccess() {
+    public void onLoginSuccess(String userid) {
         _loginButton.setEnabled(true);
+        Intent i = new Intent();
+        i.putExtra("userid", userid);
+        setResult(100, i);
         finish();
     }
 

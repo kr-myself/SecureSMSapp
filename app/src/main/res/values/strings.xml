@@ -8,4 +8,10 @@
     <string name="login_link">Already a member? Login</string>
     <string name="signup">Create Account</string>
     <string name="signup_link">No account yet? Create one</string>
+    <string name="welcome">Welcome, %1$s!</string>
+    <string name="message">Message</string>
+    <string name="messageTo">Message to </string>
+    <string name="send">Send</string>
+    <string name="remove">Remove User</string>
+    <string name="add">Add User</string>
 </resources>
