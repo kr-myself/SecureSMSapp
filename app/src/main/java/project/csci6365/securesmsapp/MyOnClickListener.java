@@ -1,11 +1,11 @@
 package project.csci6365.securesmsapp;
 
 import android.app.Dialog;
+import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MyOnClickListener implements View.OnClickListener {
     @Override
@@ -37,6 +37,13 @@ public class MyOnClickListener implements View.OnClickListener {
 
         removeBtn.setOnClickListener(e -> {
             // Remove user from list
+            MainActivity.dataset.remove(userid1.getText().toString());
+            MainActivity.userListJSON.remove(userid1.getText().toString());
+            SharedPreferences.Editor editor = MainActivity.sharedPreferences.edit();
+            editor.putString("userlist",MainActivity.userListJSON.toString());
+            editor.apply();
+            MainActivity.adapter.notifyDataSetChanged();
+            dialog.dismiss();
         });
 
         dialog.show();

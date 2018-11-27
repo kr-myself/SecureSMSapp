@@ -14,4 +14,5 @@
     <string name="send">Send</string>
     <string name="remove">Remove User</string>
     <string name="add">Add User</string>
+    <string name="enter_username">Enter Username</string>
 </resources>

@@ -11,14 +11,14 @@
     android:layout_marginEnd="20dp" >
 
     <TextView
-        android:id="@+id/userid"
+        android:id="@+id/title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:fontFamily="@font/ubuntu_medium"
-        android:text="@string/messageTo"
+        android:text="@string/enter_username"
         android:textAlignment="center"
         android:textColor="@color/colorPrimary"
         android:textSize="24sp"
@@ -31,7 +31,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <EditText
-        android:id="@+id/message"
+        android:id="@+id/userid"
         android:layout_width="240dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -40,17 +40,15 @@
         android:layout_marginBottom="8dp"
         android:ems="10"
         android:fontFamily="@font/ubuntu_medium"
-        android:inputType="textMultiLine"
-        android:maxLength="128"
-        android:singleLine="false"
+        android:maxLength="10"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/userid"
+        app:layout_constraintTop_toBottomOf="@+id/title"
         app:layout_constraintVertical_bias="0.011" />
 
     <Button
-        android:id="@+id/send"
+        android:id="@+id/add_user"
         android:layout_width="240dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -59,13 +57,13 @@
         android:layout_marginBottom="8dp"
         android:background="@color/colorPrimary"
         android:fontFamily="@font/ubuntu_medium"
-        android:text="@string/send"
+        android:text="@string/add"
         android:textColor="@color/colorWhite"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/message"
+        app:layout_constraintTop_toBottomOf="@+id/userid"
         app:layout_constraintVertical_bias="0.785" />
 
 
