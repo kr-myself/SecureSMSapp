@@ -9,8 +9,10 @@
     <string name="signup">Create Account</string>
     <string name="signup_link">No account yet? Create one</string>
     <string name="welcome">Welcome, %1$s!</string>
-    <string name="message">Message</string>
-    <string name="messageTo">Message to </string>
+    <string name="message">Send Message</string>
+    <string name="read">Read Message</string>
+    <string name="done">Done</string>
+    <string name="messageTo">Message to %1$s</string>
     <string name="send">Send</string>
     <string name="remove">Remove User</string>
     <string name="add">Add User</string>

@@ -55,13 +55,16 @@ public class Signup extends AppCompatActivity {
         String reEnterPassword = _reEnterPasswordText.getText().toString();
 
         // TODO: Implement your own signup logic here.
+        boolean success = true;
 
         new android.os.Handler().postDelayed(
                 () -> {
                     // On complete call either onSignupSuccess or onSignupFailed
                     // depending on success
-                    onSignupSuccess();
-                    // onSignupFailed();
+                    if (success)
+                        onSignupSuccess();
+                    else
+                        onSignupFailed();
                     progressDialog.dismiss();
                 }, 3000);
     }

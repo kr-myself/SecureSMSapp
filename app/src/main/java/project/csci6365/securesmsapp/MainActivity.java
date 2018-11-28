@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
@@ -14,6 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.DataOutputStream;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -24,6 +27,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import android.util.Base64;
@@ -34,13 +38,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
-
     public static SharedPreferences sharedPreferences;
     private String userid;
     private PublicKey publicKey;
     private PrivateKey privateKey;
     public static List<String> dataset;
     public static JSONObject userListJSON;
+    public static JSONObject messagesJSON;
     public static MyAdapter adapter;
 
     @BindView(R.id.welcome) TextView welcome;
@@ -78,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void onLogin() {
+        // Create the connection with the server
+
         welcome.setText(getString(R.string.welcome, userid));
 
         userListJSON = new JSONObject();
@@ -99,11 +105,11 @@ public class MainActivity extends AppCompatActivity {
         LayoutManager mLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         recyclerView.setAdapter(adapter);
 
         adapter.notifyDataSetChanged();
 
-        JSONObject finalUserListJSON = userListJSON;
         addUser.setOnClickListener(e -> {
             Dialog dialog = new Dialog(this);
             dialog.setContentView(R.layout.dialog_add_user);
@@ -113,11 +119,16 @@ public class MainActivity extends AppCompatActivity {
             addUser.setOnClickListener(f -> {
                 if (!userid_to_add.getText().toString().equals("")) {
                     String user = userid_to_add.getText().toString();
+
+                    // TODO check with server that user id is legit and receive public key if it is
+
+                    String userPublicKey = "";
+
                     try {
-                        finalUserListJSON.put(user, "user");
+                        userListJSON.put(user, userPublicKey);
 
                         SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString("userlist",finalUserListJSON.toString());
+                        editor.putString("userlist",userListJSON.toString());
                         editor.apply();
 
                         dataset.add(userid_to_add.getText().toString());
@@ -131,6 +142,37 @@ public class MainActivity extends AppCompatActivity {
 
             dialog.show();
         });
+
+        // TODO   listen for messages
+        // TODO   receive sender and message
+
+        // If we get message
+        String sending_user = "person01";
+        String message = "something encrypted";
+        int position = -1;
+        if (dataset.contains(sending_user)) {
+            for (int i = 0; i < dataset.size(); i++) {
+                if (dataset.get(i).equals(sending_user)) {
+                    position = i;
+                    break;
+                }
+            }
+            adapter = new MyAdapter(dataset, position);
+            recyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+        } else {
+            position = dataset.size();
+            dataset.add(sending_user);
+            try {
+                userListJSON.put(sending_user, "user");
+            } catch (JSONException e) {
+                Toast.makeText(this, "Unable to save user", Toast.LENGTH_LONG).show();
+            }
+            adapter = new MyAdapter(dataset, position);
+            recyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+        }
+        // After decrypting message
 
     }
 
@@ -158,8 +200,14 @@ public class MainActivity extends AppCompatActivity {
             editor.putString("publicKey", Base64.encodeToString(publicKey.getEncoded(), Base64.DEFAULT));
             editor.putString("privateKey", Base64.encodeToString(privateKey.getEncoded(), Base64.DEFAULT));
             editor.apply();
+
+            // TODO send server the public key
         } catch (NoSuchAlgorithmException e) {
             Toast.makeText(this, "Unable to generate RSA keys", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void updateUserList() {
+
     }
 }

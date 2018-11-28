@@ -55,12 +55,16 @@ public class Login extends AppCompatActivity {
         String password = _passwordText.getText().toString();
 
         // TODO: Implement your own authentication logic here.
+        boolean success = true;
+
 
         new android.os.Handler().postDelayed(
                 () -> {
                     // On complete call either onLoginSuccess or onLoginFailed
-                    onLoginSuccess(userid);
-                    // onLoginFailed();
+                    if (success)
+                        onLoginSuccess(userid);
+                    else
+                        onLoginFailed();
                     progressDialog.dismiss();
                 }, 3000);
     }
@@ -104,7 +108,7 @@ public class Login extends AppCompatActivity {
         String userid = _useridText.getText().toString();
         String password = _passwordText.getText().toString();
 
-        if (userid.isEmpty()) {
+        if (userid.isEmpty() || userid.length() > 10) {
             _useridText.setError("Field required");
             valid = false;
         } else {
