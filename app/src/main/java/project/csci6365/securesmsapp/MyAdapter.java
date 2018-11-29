@@ -6,13 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
+import java.util.ArrayList;
 import java.util.List;
 
 public class MyAdapter extends Adapter<MyAdapter.MyViewHolder> {
     private List<String> dataset;
-    private int pos;
-    private boolean visible;
+    private ArrayList<Integer> pos;
     private View.OnClickListener myOnClickListener = new MyOnClickListener();
 
     // Provide a reference to the views for each data item
@@ -29,13 +28,13 @@ public class MyAdapter extends Adapter<MyAdapter.MyViewHolder> {
         }
     }
 
-    // Provide a suitable constructor (depends on the kind of dataset)
+    // Provide a suitable constructor (depends on the kind of dataSet)
     MyAdapter(List<String> dataset) {
         this.dataset = dataset;
-        this.pos = -1;
+        this.pos = null;
     }
 
-    MyAdapter(List<String> dataset, int pos) {
+    MyAdapter(List<String> dataset, ArrayList<Integer> pos) {
         this.dataset = dataset;
         this.pos = pos;
     }
@@ -55,17 +54,17 @@ public class MyAdapter extends Adapter<MyAdapter.MyViewHolder> {
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        // - get element from your dataset at this position
+        // - get element from your dataSet at this position
         // - replace the contents of the view with that element
         holder.textView.setText(dataset.get(position));
-        if (pos == position)
+        if (pos.contains(position))
             holder.textView2.setVisibility(View.VISIBLE);
         else
             holder.textView2.setVisibility(View.INVISIBLE);
         holder.textView2.setText("New Message");
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
+    // Return the size of your dataSet (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return dataset.size();
