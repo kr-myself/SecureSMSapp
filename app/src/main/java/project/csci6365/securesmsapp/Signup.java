@@ -2,8 +2,10 @@ package project.csci6365.securesmsapp;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -50,21 +52,30 @@ public class Signup extends AppCompatActivity {
         progressDialog.setMessage("Creating Account...");
         progressDialog.show();
 
+        MainActivity.generateRSAKeys();
+        // TODO Logging in needs to display user id and store in SharedPreferences
+
         String userid = _useridText.getText().toString();
         String password = _passwordText.getText().toString();
         String reEnterPassword = _reEnterPasswordText.getText().toString();
 
-        // TODO: Implement your own signup logic here.
-        boolean success = true;
+        Connect cc = new Connect();
+        cc.get_ip();
+        if(!cc.user_exists(userid)){
+            cc.insert_user(userid, password, Base64.encodeToString(MainActivity.publicKey.getEncoded(), Base64.DEFAULT));
+        } else {
+            progressDialog.dismiss();
+            _useridText.setError("User ID already exists");
+            onSignupFailed();
+            return;
+        }
+        cc.close_sockets();
 
         new android.os.Handler().postDelayed(
                 () -> {
                     // On complete call either onSignupSuccess or onSignupFailed
                     // depending on success
-                    if (success)
-                        onSignupSuccess();
-                    else
-                        onSignupFailed();
+                    onSignupSuccess();
                     progressDialog.dismiss();
                 }, 3000);
     }
@@ -72,7 +83,10 @@ public class Signup extends AppCompatActivity {
 
     public void onSignupSuccess() {
         _signupButton.setEnabled(true);
-        setResult(RESULT_OK, null);
+        Intent i = new Intent();
+        i.putExtra("userid", _useridText.getText().toString());
+        System.out.println("SIGNUP SUCCESS: " + _useridText.getText().toString());
+        setResult(RESULT_OK, i);
         finish();
     }
 

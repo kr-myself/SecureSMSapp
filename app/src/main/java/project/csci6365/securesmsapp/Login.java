@@ -54,17 +54,22 @@ public class Login extends AppCompatActivity {
         String userid = _useridText.getText().toString();
         String password = _passwordText.getText().toString();
 
-        // TODO: Implement your own authentication logic here.
-        boolean success = true;
+        Connect cc = new Connect();
+        cc.get_ip();
+        if(!cc.login(userid, password)){
+            progressDialog.dismiss();
+            _useridText.setError("Failed Login");
+            _passwordText.setError("Failed Login");
+            onLoginFailed();
+            return;
+        }
+        cc.close_sockets();
 
 
         new android.os.Handler().postDelayed(
                 () -> {
                     // On complete call either onLoginSuccess or onLoginFailed
-                    if (success)
-                        onLoginSuccess(userid);
-                    else
-                        onLoginFailed();
+                    onLoginSuccess(userid);
                     progressDialog.dismiss();
                 }, 3000);
     }
@@ -74,9 +79,8 @@ public class Login extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SIGNUP) {
             if (resultCode == RESULT_OK) {
-
-                // TODO: Implement successful signup logic here
-                // By default we just finish the Activity and log them in automatically
+                System.out.println("LOGIN ACTIVITY RESULT: " + data.getStringExtra("userid"));
+                onLoginSuccess(data.getStringExtra("userid"));
                 this.finish();
             }
         }
@@ -92,7 +96,7 @@ public class Login extends AppCompatActivity {
         _loginButton.setEnabled(true);
         Intent i = new Intent();
         i.putExtra("userid", userid);
-        setResult(100, i);
+        setResult(RESULT_OK, i);
         finish();
     }
 

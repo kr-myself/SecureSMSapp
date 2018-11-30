@@ -1,5 +1,7 @@
 package project.csci6365.securesmsapp;
 
+import android.os.StrictMode;
+
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
@@ -23,13 +25,26 @@ public class Connect {
     DataOutputStream message_out;
     DataInputStream  message_in;
 
+    public Connect() {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+    }
+
     public void get_ip(){
         try{
-            this.ad = InetAddress.getByName(new URL ("http://projecthost.hopto.org/").getHost());
+            System.out.println("Line 28");
+            URL url = new URL("http://projecthost.hopto.org/");
+            String host = url.getHost();
+            System.out.println(host);
+            this.ad = InetAddress.getByName(host);
+            System.out.println("Line 30");
             this.socket = new Socket(ad.getHostAddress(), 5557);
+            System.out.println("Line 32");
             this.message_out = new DataOutputStream(socket.getOutputStream());
+            System.out.println("Line 34");
             this.message_in = new DataInputStream(socket.getInputStream());
-        }catch(Exception e){System.out.println(e);}
+            System.out.println("Line 36");
+        }catch(Exception e){e.printStackTrace();}
     }
 
     public void close_sockets(){
@@ -65,8 +80,10 @@ public class Connect {
         return response;
     }
 
-    public void send_message(String name, String cipher){
-        String send = "3 " + name + " " + cipher;
+    public void send_message(String sender, String receiver, String cipher){
+        // TODO Server receives sender, reciever, and cipher
+        // TODO String send = "3 " + sender + " " + receiver + "~" + cipher;
+        String send = "3 " + receiver + " " + cipher;
         String response = get_input(send);
     }
 
@@ -91,5 +108,11 @@ public class Connect {
             return temp;
         }catch(Exception e){System.out.println(e);}
         return "";
+    }
+
+    // TODO server needs to tell user the message was tampered
+    public void alert_user(String sender, String receiver) {
+        String send = "7 " + sender + " " + receiver;
+        String response = get_input(send);
     }
 }

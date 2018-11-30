@@ -45,9 +45,9 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
     public static SharedPreferences sharedPreferences;
-    private String userid;
-    private PublicKey publicKey;
-    private PrivateKey privateKey;
+    public static String userid;
+    public static PublicKey publicKey;
+    public static PrivateKey privateKey;
     public static List<String> dataSet;             // List of users to display
     public static JSONObject userListJSON;          // List of users and public keys
     public static JSONObject messagesJSON;          // List of users and unread messages
@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.welcome) TextView welcome;
     @BindView(R.id.add_user) Button addUser;
+    @BindView(R.id.button4) Button receive_message;
     public static RecyclerView recyclerView;
 
     @Override
@@ -96,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onLogin() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, JSONException {
         // Create the connection with the server
-
         welcome.setText(getString(R.string.welcome, userid));
 
         userListJSON = new JSONObject();
@@ -154,35 +154,61 @@ public class MainActivity extends AppCompatActivity {
                 if (!userid_to_add.getText().toString().equals("")) {
                     String user = userid_to_add.getText().toString();
 
-                    // TODO check with server that user id is legit and receive public key if it is
+                    Connect cc = new Connect();
+                    cc.get_ip();
+                    if (cc.user_exists(user)) {
+                        String userPublicKey = cc.get_key(user);
+                        try {
+                            userListJSON.put(user, userPublicKey);
 
-                    String userPublicKey = "";
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString("userList", userListJSON.toString());
+                            editor.apply();
 
-                    try {
-                        userListJSON.put(user, userPublicKey);
-
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString("userList",userListJSON.toString());
-                        editor.apply();
-
-                        dataSet.add(userid_to_add.getText().toString());
-                        adapter.notifyDataSetChanged();
-                    } catch (JSONException g) {
-                        Toast.makeText(this, "Unable to add user", Toast.LENGTH_LONG).show();
+                            dataSet.add(userid_to_add.getText().toString());
+                            adapter.notifyDataSetChanged();
+                        } catch (JSONException g) {
+                            Toast.makeText(this, "Unable to add user", Toast.LENGTH_LONG).show();
+                        }
+                        dialog.dismiss();
+                    } else {
+                        // TODO alert user does not exist
                     }
-                    dialog.dismiss();
                 }
             });
 
             dialog.show();
         });
+        /*
+        receive_message.setOnClickListener(e -> {
+            Connect cc = new Connect();
+            cc.get_ip();
+            String serverMessage = cc.get_messages(userid);
+            byte[] cipherText = Base64.decode(serverMessage, Base64.DEFAULT);
+            String sender = "person17";
+            try {
+                Cipher cipher = Cipher.getInstance("RSA");
+                cipher.init(Cipher.DECRYPT_MODE, privateKey);
+                byte[] decryptedMessage = cipher.doFinal(cipherText);
+                String decryptedMessageString = new String(decryptedMessage);
+                String originalMessage = decryptedMessageString.substring(0, decryptedMessageString.length() - 32);
+                saveMessage(originalMessage, sender, publicKey);
+                adapter = new MyAdapter(dataSet, positions);
+                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+            } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | JSONException e1) {
+                e1.printStackTrace();
+            }
+        });
+        */
 
         // TODO   listen for messages
-        // TODO   receive sender, message, and sender's public key
+        // TODO   1 sender message
+        // TODO   2 sender
+        /* TODO   receiveMessage
 
-        /* TODO THIS SHOULD RUN AFTER RECEIVING A MESSAGE FROM THE SERVER AND PARSING IT
+
         String sender = "";
-        PublicKey senderPublicKey;
         String encryptedMessage = "";
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
@@ -195,7 +221,9 @@ public class MainActivity extends AppCompatActivity {
         String hash = hasher.getHash();
 
         if (!hash.equals(hashMessage)) {
-            // TODO tell the server that the message was tampered with
+            Connect cc = Connect();
+            cc.get_ip();
+            cc.alert_user(sender);
             if (dataSet.contains(sender) {
             } else {
                 dataSet.add(sender);
@@ -221,12 +249,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == 100) {
+        if (resultCode == RESULT_OK) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             userid = data.getStringExtra("userid");
-            editor.putString("userid", data.getStringExtra("userid"));
+            editor.putString("userid", userid);
             editor.apply();
-            generateRSAKeys();
             try {
                 onLogin();
             } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | JSONException | IllegalBlockSizeException e) {
@@ -235,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void generateRSAKeys() {
+    public static void generateRSAKeys() {
         try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
             keyPairGenerator.initialize(1024);
@@ -248,9 +275,49 @@ public class MainActivity extends AppCompatActivity {
             editor.putString("privateKey", Base64.encodeToString(privateKey.getEncoded(), Base64.DEFAULT));
             editor.apply();
 
-            // TODO send server the public key
         } catch (NoSuchAlgorithmException e) {
-            Toast.makeText(this, "Unable to generate RSA keys", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
+    }
+
+    private void receiveMessage(String serverMessage, String sender) {
+        byte[] cipherText = Base64.decode(serverMessage, Base64.DEFAULT);
+        try {
+            Cipher cipher = Cipher.getInstance("RSA");
+            cipher.init(Cipher.DECRYPT_MODE, privateKey);
+            byte[] decryptedMessage = cipher.doFinal(cipherText);
+            String decryptedMessageString = new String(decryptedMessage);
+            String originalMessage = decryptedMessageString.substring(0, decryptedMessageString.length() - 32);
+            String hashMessage = decryptedMessageString.substring(decryptedMessageString.length() - 32, decryptedMessageString.length());
+
+            Hash hasher = new Hash(originalMessage);
+            String hash = hasher.getHash();
+
+            if (!hash.equals(hashMessage)) {
+                Connect cc = new Connect();
+                cc.get_ip();
+                cc.alert_user(sender, userid);
+                if (!dataSet.contains(sender)) {
+                    dataSet.add(sender);
+                    userListJSON.put(sender, cc.get_key(sender));
+                }
+
+                Dialog dialog = new Dialog(this);
+                dialog.setContentView(R.layout.dialog_corrupt_message);
+                TextView senderTextView = dialog.findViewById(R.id.userid);
+                senderTextView.setText(sender);
+                Button ok = dialog.findViewById(R.id.button);
+                ok.setOnClickListener(e -> dialog.dismiss());
+                dialog.show();
+            } else {
+                saveMessage(originalMessage, sender, publicKey);
+            }
+
+            adapter = new MyAdapter(dataSet, positions);
+            recyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | JSONException e1) {
+            e1.printStackTrace();
         }
     }
 

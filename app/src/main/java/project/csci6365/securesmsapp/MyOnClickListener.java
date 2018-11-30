@@ -19,7 +19,6 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -70,10 +69,10 @@ public class MyOnClickListener implements View.OnClickListener {
                     Cipher cipher = Cipher.getInstance("RSA");
                     cipher.init(Cipher.ENCRYPT_MODE, publicKey);
                     byte[] cipherText = cipher.doFinal(fullMessage.getBytes());
-
-                    // TODO send cipherText to the server
-                    // TODO userid and password need to be sent as well to validate user
-
+                    String cipherTextString = Base64.encodeToString(cipherText, Base64.DEFAULT);
+                    Connect cc = new Connect();
+                    cc.get_ip();
+                    cc.send_message(MainActivity.userid, userid2.getText().toString(), cipherTextString);
                 } catch (JSONException | NoSuchAlgorithmException | NoSuchPaddingException |
                         InvalidKeySpecException | InvalidKeyException | BadPaddingException |
                         IllegalBlockSizeException e1) {
