@@ -5,4 +5,5 @@
     <color name="colorAccent">#000000</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="iron">#CCCCCC</color>
+    <color name="red">#ff3333</color>
 </resources>

@@ -180,64 +180,7 @@ public class MainActivity extends AppCompatActivity {
         // TODO   listen for messages
         // TODO   receive sender, message, and sender's public key
 
-        /*
-        String message = Base64.encodeToString("second message".getBytes(), Base64.DEFAULT);
-        String sender = "jimothy";
-        if (dataSet.contains(sender)) {
-            for (int i = 0; i < dataSet.size(); i++) {
-                if (dataSet.get(i).equals(sender)) {
-                    positions.add(i);
-                }
-            }
-            if (messagesJSON.has(sender)) {
-                try {
-                    String messagesString = messagesJSON.getString(sender);
-                    messagesString = messagesString.replaceAll("([\\[\\]\n\\s])", "");
-                    String[] messagesArray = messagesString.split(",");
-                    ArrayList<String> messagesArrayList = new ArrayList<>(Arrays.asList(messagesArray));
-                    messagesArrayList.add(message);
-                    messagesArray = messagesArrayList.toArray(new String[0]);
-                    messagesString = Arrays.toString(messagesArray);
-                    messagesJSON.put(sender, messagesString);
-
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("messages", messagesJSON.toString());
-                    editor.apply();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                String[] messagesArray = {message};
-                String messagesString = Arrays.toString(messagesArray);
-                try {
-                    messagesJSON.put(sender, messagesString);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("messages", messagesJSON.toString());
-                    editor.apply();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        } else {
-            positions.add(dataSet.size());
-            dataSet.add(sender);
-            userListJSON.put(sender, "");
-
-            String[] messagesArray = {message};
-            String messagesString = Arrays.toString(messagesArray);
-            try {
-                messagesJSON.put(sender, messagesString);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("userList", userListJSON.toString());
-                editor.putString("messages", messagesJSON.toString());
-                editor.apply();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-        /* THIS SHOULD RUN AFTER RECEIVING A MESSAGE FROM THE SERVER AND PARSING IT
+        /* TODO THIS SHOULD RUN AFTER RECEIVING A MESSAGE FROM THE SERVER AND PARSING IT
         String sender = "";
         PublicKey senderPublicKey;
         String encryptedMessage = "";
@@ -252,8 +195,20 @@ public class MainActivity extends AppCompatActivity {
         String hash = hasher.getHash();
 
         if (!hash.equals(hashMessage)) {
-            // ALERT BOTH USERS THAT THE MESSAGE WAS TAMPERED WITH.
-            // Still save user and public key
+            // TODO tell the server that the message was tampered with
+            if (dataSet.contains(sender) {
+            } else {
+                dataSet.add(sender);
+                userListJSON.put(sender, senderPublicKey);
+            }
+
+            Dialog dialog = new Dialog(this);
+            dialog.setContentView(R.layout.dialog_corrupt_message);
+            TextView senderTextView = dialog.findViewById(R.id.userid);
+            senderTextView.setText(sender);
+            Button ok = dialog.findViewById(R.id.button);
+            ok.setOnClickListener(e -> dialog.dismiss());
+            dialog.show();
         } else {
             saveMessage(originalMessage, sender, publicKey);
         }
