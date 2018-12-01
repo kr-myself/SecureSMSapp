@@ -12,12 +12,10 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
-import android.transition.CircularPropagation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -35,12 +33,10 @@ import java.util.List;
 import android.util.Base64;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -180,93 +176,26 @@ public class MainActivity extends AppCompatActivity {
 
             dialog.show();
         });
-        /*
-        receive_message.setOnClickListener(e -> {
-            Connect cc = new Connect();
-            cc.get_ip();
-            String serverMessage = cc.get_messages(userid);
-            byte[] cipherText = Base64.decode(serverMessage, Base64.DEFAULT);
-            String sender = "person17";
-            try {
-                Cipher cipher = Cipher.getInstance("RSA");
-                cipher.init(Cipher.DECRYPT_MODE, privateKey);
-                byte[] decryptedMessage = cipher.doFinal(cipherText);
-                String decryptedMessageString = new String(decryptedMessage);
-                String originalMessage = decryptedMessageString.substring(0, decryptedMessageString.length() - 32);
-                saveMessage(originalMessage, sender, publicKey);
-                adapter = new MyAdapter(dataSet, positions);
-                recyclerView.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
-            } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | JSONException e1) {
-                e1.printStackTrace();
+
+        AsyncTask.execute(() -> {
+            String send;
+            Connect CC = new Connect();
+            CC.get_ip();
+
+            while (true) {
+                send = "8 " + userid;
+                String response = CC.get_input(send);
+                if (response.equals("1"))
+                    continue;
+                String[] serverMessage = response.split(" ");
+                if (serverMessage[1].equals("2")) {
+                    // TODO alert user the previous message they sent failed.
+                } else
+                    receiveMessage(serverMessage[1], serverMessage[0]);
             }
+            //Will Never Reach?
+            //CC.close_sockets();
         });
-        */
-
-
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                String my_id;
-                String send;
-                Connect CC = new Connect();
-                CC.get_ip();
-                my_id = "testing1"; //Put Id Here
-
-                while(true) {
-                    send = "8 " + my_id;
-                    String response = CC.get_input(send);
-                    String[] serverMessage = response.split(" ");
-                    if (serverMessage[1].equals("2")) {
-                        // TODO alert user the previous message they sent failed.
-                    } else {
-                        // SUCCEEDED
-                        receiveMessage(serverMessage[1], serverMessage[0]);
-                    }
-                }
-                //Will Never Reach?
-                //CC.close_sockets();
-            }
-        });
-
-        /*
-        String sender = "";
-        String encryptedMessage = "";
-        Cipher cipher = Cipher.getInstance("RSA");
-        cipher.init(Cipher.DECRYPT_MODE, privateKey);
-        byte[] decryptedMessageBytes = cipher.doFinal(encryptedMessage.getBytes());
-        String decryptedMessage = new String(decryptedMessageBytes);
-        String originalMessage = decryptedMessage.substring(0, decryptedMessage.length() - 32);
-        String hashMessage = decryptedMessage.substring(decryptedMessage.length() - 32, decryptedMessage.length());
-
-        Hash hasher = new Hash(originalMessage);
-        String hash = hasher.getHash();
-
-        if (!hash.equals(hashMessage)) {
-            Connect cc = Connect();
-            cc.get_ip();
-            cc.alert_user(sender);
-            if (dataSet.contains(sender) {
-            } else {
-                dataSet.add(sender);
-                userListJSON.put(sender, senderPublicKey);
-            }
-
-            Dialog dialog = new Dialog(this);
-            dialog.setContentView(R.layout.dialog_corrupt_message);
-            TextView senderTextView = dialog.findViewById(R.id.userid);
-            senderTextView.setText(sender);
-            Button ok = dialog.findViewById(R.id.button);
-            ok.setOnClickListener(e -> dialog.dismiss());
-            dialog.show();
-        } else {
-            saveMessage(originalMessage, sender, publicKey);
-        }
-
-        adapter = new MyAdapter(dataSet, positions);
-        recyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-        */
     }
 
     @Override
@@ -340,7 +269,12 @@ public class MainActivity extends AppCompatActivity {
             }
 
             adapter = new MyAdapter(dataSet, positions);
-            recyclerView.setAdapter(adapter);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    recyclerView.setAdapter(adapter);
+                }
+            });
             adapter.notifyDataSetChanged();
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | JSONException e1) {
             e1.printStackTrace();

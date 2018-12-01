@@ -73,8 +73,6 @@ public class Signup extends AppCompatActivity {
 
         new android.os.Handler().postDelayed(
                 () -> {
-                    // On complete call either onSignupSuccess or onSignupFailed
-                    // depending on success
                     onSignupSuccess();
                     progressDialog.dismiss();
                 }, 3000);
