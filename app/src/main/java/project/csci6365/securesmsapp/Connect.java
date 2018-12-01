@@ -81,9 +81,7 @@ public class Connect {
     }
 
     public void send_message(String sender, String receiver, String cipher){
-        // TODO Server receives sender, reciever, and cipher
-        // TODO String send = "3 " + sender + " " + receiver + "~" + cipher;
-        String send = "3 " + receiver + " " + cipher;
+        String send = "3 " + receiver + " " + sender + " " + cipher;
         String response = get_input(send);
     }
 
