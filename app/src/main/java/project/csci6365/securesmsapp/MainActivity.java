@@ -216,9 +216,13 @@ public class MainActivity extends AppCompatActivity {
                 while(true) {
                     send = "8 " + my_id;
                     String response = CC.get_input(send);
-                    //Do App Dealing WIth New Messages Here
-                    //Got Response Do Something With It
-
+                    String[] serverMessage = response.split(" ");
+                    if (serverMessage[1].equals("2")) {
+                        // TODO alert user the previous message they sent failed.
+                    } else {
+                        // SUCCEEDED
+                        receiveMessage(serverMessage[1], serverMessage[0]);
+                    }
                 }
                 //Will Never Reach?
                 //CC.close_sockets();
@@ -319,6 +323,7 @@ public class MainActivity extends AppCompatActivity {
                     dataSet.add(sender);
                     userListJSON.put(sender, cc.get_key(sender));
                 }
+                cc.close_sockets();
 
                 Dialog dialog = new Dialog(this);
                 dialog.setContentView(R.layout.dialog_corrupt_message);
@@ -328,7 +333,10 @@ public class MainActivity extends AppCompatActivity {
                 ok.setOnClickListener(e -> dialog.dismiss());
                 dialog.show();
             } else {
-                saveMessage(originalMessage, sender, publicKey);
+                Connect cc = new Connect();
+                cc.get_ip();
+                saveMessage(originalMessage, sender, cc.get_key(sender));
+                cc.close_sockets();
             }
 
             adapter = new MyAdapter(dataSet, positions);
@@ -339,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void saveMessage(String message, String sender, PublicKey senderPublicKey) throws JSONException {
+    private void saveMessage(String message, String sender, String senderPublicKey) throws JSONException {
         message = Base64.encodeToString(message.getBytes(), Base64.DEFAULT);
         if (dataSet.contains(sender)) {
             for (int i = 0; i < dataSet.size(); i++) {
@@ -379,7 +387,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             positions.add(dataSet.size());
             dataSet.add(sender);
-            userListJSON.put(sender, Base64.encodeToString(senderPublicKey.getEncoded(), Base64.DEFAULT));
+            userListJSON.put(sender, senderPublicKey);
 
             String[] messagesArray = {message};
             String messagesString = Arrays.toString(messagesArray);
