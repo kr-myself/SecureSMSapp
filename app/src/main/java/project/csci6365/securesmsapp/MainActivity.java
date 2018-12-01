@@ -202,6 +202,19 @@ public class MainActivity extends AppCompatActivity {
         });
         */
 
+        String my_id;
+        Connect CC = new Connect();
+        CC.get_ip();
+        //Set my_id to apps id
+        //my_id = ___;
+        /*
+        while(true){
+            send = "8 "+ my_id;
+            String response = CC.get_input(send);
+            //Got Response Do Something With It
+            //Repeat Loop,
+        }*/
+        CC.close_sockets();
         // TODO   listen for messages
         // TODO   1 sender message
         // TODO   2 sender
