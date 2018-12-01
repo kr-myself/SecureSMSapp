@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -202,25 +203,29 @@ public class MainActivity extends AppCompatActivity {
         });
         */
 
-        String my_id;
-        Connect CC = new Connect();
-        CC.get_ip();
-        //Set my_id to apps id
-        //my_id = ___;
+
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                String my_id;
+                String send;
+                Connect CC = new Connect();
+                CC.get_ip();
+                my_id = "testing1"; //Put Id Here
+
+                while(true) {
+                    send = "8 " + my_id;
+                    String response = CC.get_input(send);
+                    //Do App Dealing WIth New Messages Here
+                    //Got Response Do Something With It
+
+                }
+                //Will Never Reach?
+                //CC.close_sockets();
+            }
+        });
+
         /*
-        while(true){
-            send = "8 "+ my_id;
-            String response = CC.get_input(send);
-            //Got Response Do Something With It
-            //Repeat Loop,
-        }*/
-        CC.close_sockets();
-        // TODO   listen for messages
-        // TODO   1 sender message
-        // TODO   2 sender
-        /* TODO   receiveMessage
-
-
         String sender = "";
         String encryptedMessage = "";
         Cipher cipher = Cipher.getInstance("RSA");
