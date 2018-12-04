@@ -170,6 +170,13 @@ public class MainActivity extends AppCompatActivity {
                         dialog.dismiss();
                     } else {
                         // TODO alert user does not exist
+                        //Dialog dialog = new Dialog(this);
+                        dialog.setContentView(R.layout.user_dne_message);
+                        TextView senderTextView = dialog.findViewById(R.id.userid);
+                        senderTextView.setText(user);
+                        Button ok = dialog.findViewById(R.id.button);
+                        ok.setOnClickListener(g -> dialog.dismiss());
+                        dialog.show();
                     }
                 }
             });
@@ -190,6 +197,13 @@ public class MainActivity extends AppCompatActivity {
                 String[] serverMessage = response.split(" ");
                 if (serverMessage[1].equals("2")) {
                     // TODO alert user the previous message they sent failed.
+                    Dialog dialog = new Dialog(this);
+                    dialog.setContentView(R.layout.dialog_message_not_sent);
+                    TextView senderTextView = dialog.findViewById(R.id.userid);
+                    senderTextView.setText(send);
+                    Button ok = dialog.findViewById(R.id.button);
+                    ok.setOnClickListener(h -> dialog.dismiss());
+                    dialog.show();
                 } else
                     receiveMessage(serverMessage[1], serverMessage[0]);
             }
